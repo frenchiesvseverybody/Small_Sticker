@@ -201,71 +201,71 @@
       ////******SECTION FOR CHANGING THE URL*****////
       const changeTheExternalUrl = () => {
         ////You should copy and paste your desired URL into the section 'externalURL' (line 206) below that you see an URL.
-        const externalURL = "https://www.frenchiesvseverybody.com/shrooms/?ref=FBRNVS";
+        const externalURL =
+          "https://www.frenchiesvseverybody.com/shrooms/?ref=FBRNVS";
         return externalURL;
       };
       ////******SECTION FOR CHANGING THE URL*****////
 
-    const playVideoComponent = {
-          schema: {
-              video: { type: "string" },
-              thumb: { type: "string" },
-              canstop: { type: "bool" },
-          },
-          init() {
-              const v = document.querySelector(this.data.video);
-              const p = this.data.thumb && document.querySelector(this.data.thumb);
-              const directButton = document.getElementById("start-button-id");
+      const playVideoComponent = {
+        schema: {
+          video: { type: "string" },
+          thumb: { type: "string" },
+          canstop: { type: "bool" },
+        },
+        init() {
+          const v = document.querySelector(this.data.video);
+          const p = this.data.thumb && document.querySelector(this.data.thumb);
+          const directButton = document.getElementById("start-button-id");
 
-              directButton.addEventListener("click", () => {
-                  const URL = changeTheExternalUrl();
-                  window.location.href = `${URL}`;
-              });
+          directButton.addEventListener("click", () => {
+            const URL = changeTheExternalUrl();
+            window.location.href = `${URL}`;
+          });
 
-              const el = this.el;
-setTimeout(() => {
-                          directButton.style.display = "block";
-                      }, 50000); // THIS IS HOW TO CHANGE TIME DEALAY FOR BUTTON IN MILISECONDS
-              // Set thumbnail with flat material
-              if (p) {
+          const el = this.el;
+          setTimeout(() => {
+            directButton.style.display = "block";
+          }, 50000); // THIS IS HOW TO CHANGE TIME DEALAY FOR BUTTON IN MILISECONDS
+          // Set thumbnail with flat material
+          if (p) {
+            el.setAttribute("material", "src", p);
+            el.setAttribute("shader", "flat");
+          } else {
+            el.setAttribute("material", "src", v);
+            el.setAttribute("shader", "chromakey");
+          }
+
+          el.setAttribute("class", "cantap");
+          el.setAttribute("color", "0.1 0.9 0.2");
+
+          let playing = false;
+
+          el.sceneEl.addEventListener("touchstart", () => {
+            if (!playing) {
+              el.setAttribute("material", "src", v);
+              el.setAttribute("shader", "chromakey");
+              v.play();
+
+              v.addEventListener("ended", () => {
+                if (p) {
                   el.setAttribute("material", "src", p);
                   el.setAttribute("shader", "flat");
-              } else {
-                  el.setAttribute("material", "src", v);
-                  el.setAttribute("shader", "chromakey");
-              }
-
-              el.setAttribute("class", "cantap");
-              el.setAttribute("color", "0.1 0.9 0.2");
-
-              let playing = false;
-
-              el.sceneEl.addEventListener("touchstart", () => {
-                  if (!playing) {
-                      el.setAttribute("material", "src", v);
-                      el.setAttribute("shader", "chromakey");
-                      v.play();
-
-                      v.addEventListener("ended", () => {
-                         
-                          if (p) {
-                              el.setAttribute("material", "src", p);
-                              el.setAttribute("shader", "flat");
-                          }
-                          playing = false;
-                      });
-
-                      playing = true;
-                  } else if (this.data.canstop) {
-                      if (p) {
-                          el.setAttribute("material", "src", p);
-                          el.setAttribute("shader", "flat");
-                      }
-                      v.pause();
-                      playing = false;
-                  }
+                }
+                playing = false;
               });
-          },
+
+              playing = true;
+            } else if (this.data.canstop) {
+              if (p) {
+                el.setAttribute("material", "src", p);
+                el.setAttribute("shader", "flat");
+              }
+              v.pause();
+              playing = false;
+            }
+          });
+        },
       };
 
       AFRAME.registerComponent("play-video-component", playVideoComponent);
@@ -274,34 +274,80 @@ setTimeout(() => {
     </script>
   </head>
   <body>
+    <div id="popupcontainer" style="display: none">
+      <div class="scenecontent">
+        <h3>
+          Meet Bowzer: Mascott of Frenchies vs Everybody.... he has something to say :)
+        </h3>
+        <img
+          src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/assets/boxtoploop.gif"
+          alt="Bowzer GIF"
+          class="gif"
+        />
+        <h3>
+          BUT YOU HAVE TO SAY "YES/ALLOW" ON THE NEXT SCREEN OR HE WON'T WORK :(
+        </h3>
+        <img
+          id="popupimg"
+          src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/assets/popup.png"
+          alt="Bowzer Image"
+          class="image"
+        />
+        <h3>
+          Hit the continue button below, then "yes/allow" (you'll only need to do that once)
+        </h3>
+        <button id="popupcontainer-button">Continue</button>
+      </div>
+    </div>
+
+    <div id="refresh-page-image" style="display: none">
+      <div class="scenecontent">
+        <img id="refreshimg" src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/assets/Refresh.png" >
+        <h3>You have denied camera permission. To enjoy the AR experience, please refresh the page and grant camera access!</h3>
+      </div>
+    </div>
+
+    <div id="errorimage" style="display: none">
+      <div class="scenecontent">
+        <img id="errorimg" src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/assets/camera_permission_denied.png" >
+        <h3>Camera Permission Required,<br>Here is how to try again</h3>
+         <img 
+          id="errorgifimg"
+          src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/assets/Android-CameraPermissionsRequired.gif"
+          class="gif"
+        />
+      </div>
+    </div>
+
     <img
       class="start-button"
       id="start-button-id"
-      src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/black-7252948_960_720%20copy.png"
+      src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/assets/10-off.png"
     />
 
     <a-scene
-      mindar-image="imageTargetSrc: https://frenchiesvseverybody.github.io/Small_Sticker/Smaller_target.mind"
+      mindar-image="imageTargetSrc: https://frenchiesvseverybody.github.io/Small_Sticker/assets/Smaller_target.mind; autoStart: false;"
       color-space="sRGB"
       renderer="colorManagement: true, physicallyCorrectLights;"
       vr-mode-ui="enabled: false"
+      xr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
       gesture-detector
     >
       <a-assets>
         <img
           id="dog-thumb"
-          src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/transparent_Frenchie_thumbnail.png"
+          src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/assets/transparent_Frenchie_thumbnail.png"
         />
         <a-asset-item
           id="avatarModel"
           src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/softmind/scene.gltf"
-          ></a-asset-item>
+        ></a-asset-item>
 
-          <!--******SECTION FOR CHANGING THE VIDEO*****////-->
-          <!--////You should copy and paste your desired video URL that you uploaded in the 'Assets' folder into the section 'src' below that you see a video URL-->
+        <!--******SECTION FOR CHANGING THE VIDEO*****////-->
+        <!--////You should copy and paste your desired video URL that you uploaded in the 'Assets' folder into the section 'src' below that you see a video URL-->
         <video
-          src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/Sticker.mp4"
+          src="https://raw.githubusercontent.com/frenchiesvseverybody/Small_Sticker/main/assets/Sticker.mp4"
           id="dog-video"
           preload="auto"
           crossorigin="anonymous"
@@ -319,11 +365,108 @@ setTimeout(() => {
 
       <a-entity mindar-image-target="targetIndex: 0">
         <a-video
-          pinch-scale 
-          width="2" height="2.5" position="0 0.19 0"
+          pinch-scale
+          width="2.08"
+          height="2.6"
+          position="0 0.2 0"
           play-video-component="video: #dog-video;  thumb: #dog-thumb; canstop: true"
         ></a-video>
       </a-entity>
     </a-scene>
+    <script>
+      // Function to get a cookie by name
+      function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+        return null;
+      }
+
+      // Function to set a cookie
+      function setCookie(name, value, days) {
+        const d = new Date();
+        d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = `${name}=${value}; expires=${d.toUTCString()}; path=/`;
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const sceneEl = document.querySelector("a-scene");
+        let arSystem;
+        const popupContainer = document.querySelector("#popupcontainer");
+        
+        // Initially hide the popup (in case it's visible due to CSS being overridden or previous logic)
+        popupContainer.style.display = "none";
+
+        // Event listener for when the scene is loaded
+        sceneEl.addEventListener("loaded", function () {
+          arSystem = sceneEl.systems["mindar-image-system"];
+          console.log("AR scene loaded");
+
+          // Check if the user has already interacted with the prompt using cookies
+          const userInteracted = getCookie("userInteracted");
+
+          // If the user has already interacted, hide the popup and start AR
+          if (userInteracted) {
+            popupContainer.remove(); // Hide popup container
+            if (arSystem) {
+              arSystem.start(); // Start AR scene if arSystem is defined
+            }
+          } else {
+            // Otherwise, show the popup and add event listener for the "Continue" button
+            popupContainer.style.display = "block";
+            const popupContainerButton = document.querySelector(
+              "#popupcontainer-button"
+            );
+            popupContainerButton.addEventListener("click", () => {
+              console.log("starting AR");
+              if (arSystem) {
+                arSystem.start(); // Start AR if arSystem is defined
+              }
+
+              const popupContainer = document.querySelector("#popupcontainer");
+              popupContainer.remove(); // Hide the popup container
+
+              // Set the cookie to remember user interaction
+              setCookie("userInteracted", "true", 30); // Cookie expires in 30 days
+            });
+          }
+        });
+
+        // Function to detect device platform
+        function getDevicePlatform() {
+            const userAgent = navigator.userAgent;
+            if (/iPhone|iPad|iPod/i.test(userAgent)) {
+                return 'iOS';
+            } 
+            return 'others';
+        }
+
+        sceneEl.addEventListener("arError", (event) => {
+            console.log("MindAR failed to start");
+            const loadingDiv = document.querySelector('.mindar-ui-overlay.mindar-ui-loading');
+            if (loadingDiv) {
+                loadingDiv.style.display = 'none'; // Hide the loading div
+            }
+            const platform = getDevicePlatform();
+
+            if (platform === 'iOS') {
+                console.log("iPhone detected. Showing refresh page image...");
+
+                const refreshPageImage = document.querySelector("#refresh-page-image");
+                if (refreshPageImage) {
+                    refreshPageImage.style.display = "grid"; // Make the image visible
+                }
+            } else {
+                console.log("Other platform detected. Showing error image and redirecting...");
+                const errorImage = document.querySelector("#errorImage");
+                if (errorImage) {
+                    errorImage.style.display = "grid"; // Make the image visible
+                }
+            }
+        });
+
+
+      });
+    </script>
   </body>
 </html>
